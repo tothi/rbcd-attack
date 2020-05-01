@@ -62,7 +62,7 @@ addcomputer.py -computer-name 'FAKE_COMPUTER$' -computer-pass SuperS3cr3tP@ss -d
 
 ### Modifying delegation rights
 
-Implemented the script (./rbcd.py) found here in the repo which
+Implemented the script [rbcd.py](./rbcd.py) found here in the repo which
 adds the related security descriptor for the newly created FAKE_COMPUTER to the
 `msDS-AllowedToActOnBehalfOfOtherIdentity` property of the target computer.
 
