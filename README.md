@@ -5,13 +5,14 @@
 This repo is about a practical attack against Kerberos Resource-Based
 Constrained Delegation in a Windows Active Directory Domain.
 
-The difference from other common implementations is that we are
-launching the attack from outside of the Windows Domain, not from
-a domain joined (usually Windows) computer.
+> The difference from other common implementations is that we are
+> launching the attack **from outside of the Windows Domain**, not from
+> a domain joined (usually Windows) computer.
 
-The attack is implemented using only Python3
-[Impacket](https://www.secureauth.com/labs/open-source-tools/impacket)
-(and its dependencies). Tested on [Arch](https://www.archlinux.org/).
+The attack is implemented **using only Python3
+[Impacket](https://www.secureauth.com/labs/open-source-tools/impacket)**
+(and its dependencies). Tested on [Arch](https://www.archlinux.org/)
+with up-to-date Impacket (0.9.21 as of writing).
 
 ![Attack Log](./rbcd-attack.png)
 
@@ -25,7 +26,7 @@ What we need here as prerequisites:
 
 * a domain account with write access to the target computer (exactly write access to the `msDS-AllowedToActOnBehalfOfOtherIdentity` property of the target computer domain object)
 * permission to create new computer accounts (this is usually default, see `MachineAccountQuota`)
-* LDAP (389/tcp) and SAMR (445/tmp) (or LDAPS (636/tcp)) access to the DC.
+* LDAP (389/tcp) and SAMR (445/tcp) (or LDAPS (636/tcp)) access to the DC.
 * Kerberos (88/tcp) access to the DC
 
 The attack path in very high level:
@@ -38,6 +39,7 @@ Benefit:
 
 * Impersonated Service Tickets may allow high-level access to services on
 the target like CIFS, HTTP, etc, if the impersonated account has privileges.
+Sometimes takeover of the computer.
 
 ## Common toolsets
 
@@ -50,7 +52,7 @@ Windows Computer using:
 
 ## Impacket implementation
 
-This implementation uses pure Impacket from outside the Domain.
+This implementation uses pure [Impacket](https://github.com/SecureAuthCorp/impacket) from outside the Domain.
 
 ### Creating the fake computer
 
@@ -103,4 +105,4 @@ For details about abusing Resource-Based Constrained Delegation:
 
 And one of the most comprehensive presentations about Kerberos Attacks:
 
-* [Constructing Kerberos Attacks with Delegation Primitives](https://shenaniganslabs.io/media/Constructing%20Kerberos%20Attacks%20with%20Delegation%20Primitives.pdf) slides at Defcon by [Elad Shamir](https://twitter.com/elad_shamir) and [Matt Bush](https://twitter.com/3xocyte)
+* [Constructing Kerberos Attacks with Delegation Primitives slides](https://shenaniganslabs.io/media/Constructing%20Kerberos%20Attacks%20with%20Delegation%20Primitives.pdf) at Defcon by [Elad Shamir](https://twitter.com/elad_shamir) and [Matt Bush](https://twitter.com/3xocyte)
