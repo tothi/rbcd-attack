@@ -43,7 +43,7 @@ logging.info('Initializing LDAP connection to {}'.format(options.dc_ip))
 #tls = ldap3.Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
 serv = ldap3.Server(options.dc_ip, tls=False, get_info=ldap3.ALL)
 logging.info('Using {} account with password ***'.format(attackeraccount[0]))
-conn = ldap3.Connection(serv, user=attackeraccount[0], password=attackeraccount[1], authentication=ldap3.SIMPLE)
+conn = ldap3.Connection(serv, user=attackeraccount[0], password=attackeraccount[1], authentication=ldap3.NTLM)
 conn.bind()
 logging.info('LDAP bind OK')
 
