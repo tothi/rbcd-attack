@@ -56,6 +56,7 @@ if options.k:
 else:
     logging.info('Using {} account with password ***'.format(attackeraccount[0]))
     conn = ldap3.Connection(serv, user=attackeraccount[0], password=attackerpassword, authentication=ldap3.NTLM)
+conn.open()   # <-- retrieves RootDSE
 conn.bind()
 logging.info('LDAP bind OK')
 
